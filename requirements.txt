@@ -1,0 +1,15 @@
+langgraph
+langchain-google-genai
+pydantic
+
+arxiv
+sentence-transformers
+psycopg2-binary
+numpy
+
+fastapi
+uvicorn
+pydantic-settings
+
+python-dotenv
+
