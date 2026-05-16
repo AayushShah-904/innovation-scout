@@ -85,10 +85,9 @@ def search_similar_documents(query:str,limit:int=5)->list[dict]:
     return results
 
 if __name__ == "__main__":
-    # --- Integration Test Block ---
+
     print("\n--- Running Vector Store Test ---")
-    
-    # 1. Simulate an incoming document from your arXiv tool
+
     mock_doc = {
         "title": "Agentic Workflows in Enterprise Search Systems",
         "summary": "An exploration of LangGraph architectures paired with pgvector to solve R&D tech scouting challenges.",
@@ -100,7 +99,6 @@ if __name__ == "__main__":
     save_document(mock_doc)
     print("Ingestion complete.")
     
-    # 2. Test semantic searching using completely different phrasing
     search_prompt = "AI orchestration frameworks for matching technology targets"
     print(f"\nTesting vector similarity search for: '{search_prompt}'")
     matched_papers = search_similar_documents(search_prompt, limit=1)

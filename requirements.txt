@@ -1,6 +1,8 @@
 langgraph
 langchain-google-genai
 pydantic
+google-generativeai
+
 
 arxiv
 sentence-transformers
