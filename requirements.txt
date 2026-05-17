@@ -14,5 +14,6 @@ uvicorn
 pydantic-settings
 
 python-dotenv
-
 IPython
+streamlit
+torchvision

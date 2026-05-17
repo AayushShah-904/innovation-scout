@@ -9,7 +9,7 @@ def search_web(query: str, max_results: int = 5) -> list[dict]:
     try:
         llm = ChatGoogleGenerativeAI(
             model="gemini-2.5-flash",
-            temperature=0.4
+            temperature=0.4,
         )
 
         model_with_search = llm.bind_tools([{"google_search": {}}])

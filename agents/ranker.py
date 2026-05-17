@@ -7,9 +7,11 @@ load_dotenv()
 class RankerInput(BaseModel):
     title:str
     url:str
+    source: str=Field(description="The source of the result")
     relevance_score: float=Field(description="Score from 0 to 1 indicating relevance to the R&D query")
     credibility_score: float=Field(description="Score from 0 to 1 indicating research methodology,publication authority or market validity")
     reason: str=Field(description="A brief explanation for the assigned scores")
+    
     
 class RankedResultSchema(BaseModel):
     results: list[RankerInput]
@@ -17,7 +19,7 @@ class RankedResultSchema(BaseModel):
 def rank_results_node(state:dict)->dict:
 
     raw_docs=state.get("raw_results",[])
-    user_query=state.get("user_query","")
+    user_query=state.get("query","")
 
     print(f"-----------Agent Ranker: Evaluating {len(raw_docs)} results for query: {user_query} -----------   ")
 

@@ -27,7 +27,8 @@ def search(query:str,max_results:int=5)->list[dict]:
             }
 
             sanitized_results.append(doc)
-            print(f"Successfully retrieved {len(sanitized_results)} papers from arXiv.")
+            
+        print(f"Successfully retrieved {len(sanitized_results)} papers from arXiv.")
         return sanitized_results
 
     except Exception as e:

@@ -31,7 +31,7 @@ def parse_query_node(state: dict) -> dict:
     
     try:
         analysis = structured_llm.invoke(prompt)
-        
+        print(f"\n Refined Query: {analysis.refined_query}")
         return {
             "keywords": analysis.keywords,
             "query": analysis.refined_query 

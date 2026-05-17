@@ -1,9 +1,16 @@
 import psycopg2
 from sentence_transformers import SentenceTransformer
-import os
 
 print("Loading sentence-transformers model (all-MiniLM-L6-v2)...")
-model = SentenceTransformer("all-MiniLM-L6-v2")
+
+model = None
+
+def get_model():
+    global model
+    if model is None:
+        model = SentenceTransformer("all-MiniLM-L6-v2")
+    return model
+
 print("Model loaded successfully.")
 
 def get_db_connection():
@@ -20,9 +27,12 @@ def save_document(doc:dict)->bool:
     """Saves a document to the vector database after generating an embedding."""
 
     text_to_embed = f"{doc['title']} {doc['summary']}"
-    embedding = model.encode(text_to_embed).tolist()
+    
 
     try:
+        encoder=get_model()
+        embedding = encoder.encode(text_to_embed).tolist()
+
         conn = get_db_connection()
         cur = conn.cursor()
 
@@ -49,14 +59,19 @@ def save_document(doc:dict)->bool:
 
 def search_similar_documents(query:str,limit:int=5)->list[dict]:
     """Searches for documents similar to the query using cosine similarity"""
-    query_vector = model.encode(query).tolist()
-    results=[]
-
-    conn=get_db_connection()
-    cur=conn.cursor()
-
-    try:
     
+    if not query:
+        return []
+    
+    results=[]
+    
+    try:
+        encoder=get_model()
+        query_vector = encoder.encode(query).tolist()
+        
+        conn=get_db_connection()
+        cur=conn.cursor()
+
         cur.execute("""
                     SELECT id, title, summary, url, source, (embedding <=> %s::vector) as distance
                     FROM documents
