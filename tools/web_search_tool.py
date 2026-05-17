@@ -12,6 +12,7 @@ def search_web(query: str, max_results: int = 5) -> list[dict]:
             temperature=0.4,
         )
 
+        # Bind Google Search grounding to Gemini so it can actively search the live web for recent developments
         model_with_search = llm.bind_tools([{"google_search": {}}])
 
         prompt = f"""
@@ -26,6 +27,7 @@ def search_web(query: str, max_results: int = 5) -> list[dict]:
         res_metadata = getattr(response, "response_metadata", {})
         grounding_meta = res_metadata.get("grounding_metadata", {})
         
+        # Parse the live web grounding chunks from Gemini's response metadata to get exact source URLs
         if grounding_meta and "grounding_chunks" in grounding_meta:
             chunks = grounding_meta.get("grounding_chunks", [])
             for chunk in chunks[:max_results]:

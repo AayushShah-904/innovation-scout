@@ -3,6 +3,7 @@ from sentence_transformers import SentenceTransformer
 
 print("Loading sentence-transformers model (all-MiniLM-L6-v2)...")
 
+# Cache the embedding model in memory so we don't suffer the overhead of reloading it on every search
 model = None
 
 def get_model():
@@ -26,6 +27,7 @@ def get_db_connection():
 def save_document(doc:dict)->bool:
     """Saves a document to the vector database after generating an embedding."""
 
+    # Combine title and summary so the embedding captures the full context of the paper
     text_to_embed = f"{doc['title']} {doc['summary']}"
     
 
@@ -72,6 +74,7 @@ def search_similar_documents(query:str,limit:int=5)->list[dict]:
         conn=get_db_connection()
         cur=conn.cursor()
 
+        # Use pgvector's cosine distance operator (<=>) to find the most relevant documents in our database
         cur.execute("""
                     SELECT id, title, summary, url, source, (embedding <=> %s::vector) as distance
                     FROM documents

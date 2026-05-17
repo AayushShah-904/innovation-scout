@@ -7,6 +7,7 @@ def human_review_node(state: AgentState) -> Dict[str, Any]:
     In the final app, this will pause execution for Streamlit input.
     """
     print("\n--- GATE: Pausing for Human-in-the-Loop Review ---")
+    # Check if the researcher has clicked Approve in the Streamlit UI to authorize continuing the workflow
     approved = state.get("review_approved", False)
     
     if approved:

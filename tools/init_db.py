@@ -1,5 +1,4 @@
 import psycopg2
-import psycopg2
 
 def init_database():
     conn=psycopg2.connect(
@@ -11,6 +10,7 @@ def init_database():
     )
 
     with conn.cursor() as cur:
+        # Enable the pgvector extension so PostgreSQL can store and query 384-dimensional AI embeddings
         cur.execute("create extension if not exists vector")
 
         cur.execute(""" 

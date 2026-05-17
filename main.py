@@ -13,6 +13,7 @@ app=FastAPI(title="Innovation Scout R&D Engine")
 
 graph_app=build_graph()
 
+# Stores active LangGraph thread configurations in memory so we can resume them after human review
 SESSION_STORE:Dict[str,dict]={}
 
 class SearchRequest(BaseModel):
@@ -40,6 +41,7 @@ async def search(request:SearchRequest):
     try:
         print(f"Starting search session {session_id} for query: {request.query}")
 
+        # Start the LangGraph workflow; it will automatically pause when it reaches the human review checkpoint
         graph_app.invoke({"query":request.query},config)
 
         snapshot=graph_app.get_state(config)
@@ -64,6 +66,7 @@ async def human_review(request:ApproveRequest):
         raise HTTPException(status_code=404,detail="Session not found")
     
     try:
+        # Update the paused graph state with the researcher's approval decision, then resume execution to build the final report
         graph_app.update_state(
             config,
             {"review_approved":request.approve}

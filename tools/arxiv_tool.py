@@ -1,11 +1,11 @@
 import arxiv
-from datetime import datetime
 
 def search(query:str,max_results:int=5)->list[dict]:
     print(f"Querying arXvi api for {query}")
 
     client=arxiv.Client()
     
+    # Query the official arXiv API for academic papers sorted by relevance
     search=arxiv.Search(
         query=query,
         max_results=max_results,
@@ -17,6 +17,7 @@ def search(query:str,max_results:int=5)->list[dict]:
     try:
         results=client.results(search)
         for r in results:
+            # Clean up formatting and extract key metadata so our AI ranker can evaluate the paper easily
             doc = {
                 "title": r.title.replace("\n", " ").strip(),
                 "summary": r.summary.replace("\n", " ").strip()[:600] + "...",
@@ -47,5 +48,3 @@ if __name__=="__main__":
         print(f"    URL: {paper['url']}")
         print(f"    Authors: {', '.join(paper['authors'])}")
         print(f"    Summary Snippet: {paper['summary'][:150]}")
-
-

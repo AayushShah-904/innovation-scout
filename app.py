@@ -19,11 +19,11 @@ if "final_report" not in st.session_state:
 st.caption("Multi-Agent Knowledge Retrieval & Verification Engine Powered by LangGraph & Gemini") 
 
 if st.session_state.stage == "search_input":
-    st.subheader("Enter Your Research Query")
     query = st.text_input("Enter your research query:", placeholder="e.g. 'Eco-friendly bio-plastics for protective phone cases'")
     if st.button("Search") and query.strip():
         if not query.strip():
             st.error("Query cannot be empty.")
+        # Trigger the backend to run our LangGraph agents in parallel across arXiv, local vector DB, and live web
         with st.spinner("Executing 3-Way Parallel Agent Scans (arXiv, Local DB, Live Web Grounding)"):
             try:
                 response = requests.post(f"{API_URL}/search", json={"query": query})
@@ -38,7 +38,7 @@ if st.session_state.stage == "search_input":
             except Exception as e:
                 st.error(f"Connection error to FastAPI server: {e}")
 
-#hitl
+# The LangGraph workflow pauses here at our Human-in-the-Loop checkpoint so the researcher can verify AI credibility scores before generating the final report
 elif st.session_state.stage == "review":
     st.subheader("Review & Approve Search Results")
     st.info("The LangGraph state machine has paused execution. Evaluate the extracted data assets below to authorize report compilation.")
@@ -75,6 +75,7 @@ elif st.session_state.stage == "review":
 
     col_app, col_can = st.columns([0.5, 0.5])
     with col_app:
+        # Once approved, we tell the backend to resume the LangGraph state machine and synthesize the final briefing
         if st.button("Approve & Compile Briefing Report", type="primary", use_container_width=True):
             with st.spinner("Authorizing state thread... Building final R&D report brief..."):
                 payload = {"session_id": st.session_state.session_id, "approve": True}

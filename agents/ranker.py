@@ -53,6 +53,7 @@ def rank_results_node(state:dict)->dict:
 
     try:
         score_output=structured_llm.invoke(prompt)
+        # Sort the evaluated documents so the highest scoring research appears at the top of the researcher's review screen
         sorted_results=sorted(
             [item.model_dump() for item in score_output.results],
             key=lambda x: (x["relevance_score"], x["credibility_score"]),

@@ -3,7 +3,6 @@ langchain-google-genai
 pydantic
 google-generativeai
 
-
 arxiv
 sentence-transformers
 psycopg2-binary
@@ -14,6 +13,4 @@ uvicorn
 pydantic-settings
 
 python-dotenv
-IPython
 streamlit
-torchvision

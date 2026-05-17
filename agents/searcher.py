@@ -17,6 +17,7 @@ def parallel_search_node(state:dict)->dict:
     local_results = []
     web_results = []
 
+    # Run arXiv, local vector DB, and Google Web searches simultaneously on separate threads to save time
     with concurrent.futures.ThreadPoolExecutor() as ex:
         future_arxiv=ex.submit(search,search_item,max_results=2)
         future_vector=ex.submit(search_similar_documents,search_item,limit=2)
@@ -57,6 +58,7 @@ def parallel_search_node(state:dict)->dict:
             combined_results.append(doc)
 
             try:
+                # Automatically ingest newly discovered arXiv papers into our local vector database for future research
                 save_document(doc)
                 new_count+=1
             except Exception as e:
@@ -68,6 +70,7 @@ def parallel_search_node(state:dict)->dict:
             seen_urls.add(doc["url"])
             combined_results.append(doc)
             try:
+                # Automatically ingest live web articles into the vector database as well
                 save_document(doc)
                 new_count += 1
             except Exception as e:

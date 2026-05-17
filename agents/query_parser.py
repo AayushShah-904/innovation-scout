@@ -18,6 +18,7 @@ def parse_query_node(state: dict) -> dict:
     
     llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash")
     
+    # Force Gemini to return its analysis matching our QueryAnalysis Pydantic schema exactly
     structured_llm = llm.with_structured_output(QueryAnalysis)
     
     prompt = f"""
