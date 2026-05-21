@@ -6,7 +6,7 @@ FROM python:3.11-slim
 # Set working directory
 WORKDIR /app
 
-# Install system dependencies needed for psycopg2 and sentence-transformers
+# Install system dependencies needed for psycopg2
 RUN apt-get update && apt-get install -y \
     gcc \
     libpq-dev \
@@ -16,16 +16,13 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Pre-download the sentence-transformers model during build
+# Pre-download the fastembed ONNX model during build
 # so the first request isn't slow on Render's cold start
-RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('all-MiniLM-L6-v2')"
+RUN python -c "from fastembed import TextEmbedding; TextEmbedding(model_name='BAAI/bge-small-en-v1.5')"
 
 # Copy the entire project source code
 COPY . .
 
-# Expose the port Render will map to
-EXPOSE 8000
-
-# Start the FastAPI app with uvicorn
-# Use 0.0.0.0 so Render can reach it from outside the container
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Render dynamically assigns a PORT environment variable — we must use it
+# Default to 8000 for local Docker runs
+CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"]
