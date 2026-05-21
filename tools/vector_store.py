@@ -25,6 +25,10 @@ def get_db_connection():
     """Establishes a connection using DATABASE_URL (Supabase) or individual env vars (local)."""
     database_url = os.getenv("DATABASE_URL")
     if database_url:
+        # Supabase requires SSL — append sslmode=require if not already present
+        if "sslmode" not in database_url:
+            separator = "&" if "?" in database_url else "?"
+            database_url = f"{database_url}{separator}sslmode=require"
         return psycopg2.connect(database_url)
     return psycopg2.connect(
         dbname=os.getenv("DB_NAME", "innovation_db"),
