@@ -1,4 +1,5 @@
 import psycopg2
+import os
 from sentence_transformers import SentenceTransformer
 
 print("Loading sentence-transformers model (all-MiniLM-L6-v2)...")
@@ -15,13 +16,16 @@ def get_model():
 print("Model loaded successfully.")
 
 def get_db_connection():
-    """Establishes a connection to the pgvector PostgreSQL container."""
+    """Establishes a connection using DATABASE_URL (Supabase) or individual env vars (local)."""
+    database_url = os.getenv("DATABASE_URL")
+    if database_url:
+        return psycopg2.connect(database_url)
     return psycopg2.connect(
-        dbname="innovation_db",
-        user="admin",
-        password="12345",
-        host="localhost",
-        port="5432"
+        dbname=os.getenv("DB_NAME", "innovation_db"),
+        user=os.getenv("DB_USER", "admin"),
+        password=os.getenv("DB_PASSWORD", "12345"),
+        host=os.getenv("DB_HOST", "localhost"),
+        port=os.getenv("DB_PORT", "5432")
     )
 
 def save_document(doc:dict)->bool:

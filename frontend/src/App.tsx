@@ -9,7 +9,8 @@ import {
   CircleDot, Download, Copy, Check
 } from 'lucide-react'
 
-// ─── Types ───────────────────────────────────────────────────────────────────
+// Use VITE_API_URL in production (Render backend URL), fallback to '/api' for local dev proxy
+const API_BASE = import.meta.env.VITE_API_URL ?? '/api'
 
 type Stage = 'search' | 'scanning' | 'review' | 'report'
 
@@ -806,7 +807,7 @@ export default function App() {
     setStage('scanning')
 
     try {
-      const res = await fetch('/api/search', {
+      const res = await fetch(`${API_BASE}/search`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query: q }),
@@ -833,7 +834,7 @@ export default function App() {
     setError('')
 
     try {
-      const res = await fetch('/api/approve', {
+      const res = await fetch(`${API_BASE}/approve`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ session_id: searchData.session_id, approve: true }),

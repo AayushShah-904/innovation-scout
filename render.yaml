@@ -1,0 +1,42 @@
+# render.yaml — Render Blueprint for Innovation Scout
+# Deploys both the FastAPI backend and React frontend with a single config
+# https://render.com/docs/blueprint-spec
+
+services:
+  # ─── FastAPI Backend ─────────────────────────────────────────────────────────
+  - type: web
+    name: innovation-scout-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    envVars:
+      - key: GOOGLE_API_KEY
+        sync: false          # You will set this manually in Render dashboard
+
+      # ── Supabase connection string ──────────────────────────────────────────
+      # Format: postgresql://[user]:[password]@[host]:[port]/[dbname]
+      # Get this from: Supabase → Project Settings → Database → Connection String (URI)
+      - key: DATABASE_URL
+        sync: false          # You will set this manually in Render dashboard
+
+    healthCheckPath: /
+
+  # ─── React Frontend (Static Site) ────────────────────────────────────────────
+  - type: web
+    name: innovation-scout-ui
+    runtime: static
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: ./frontend/dist
+    plan: free
+    envVars:
+      # ── Point the frontend to your deployed backend URL ─────────────────────
+      # Format: https://innovation-scout-api.onrender.com
+      # Get this from: Render dashboard → innovation-scout-api → URL
+      - key: VITE_API_URL
+        sync: false          # You will set this manually in Render dashboard
+
+    routes:
+      # SPA fallback — serve index.html for all client-side routes
+      - type: rewrite
+        source: /*
+        destination: /index.html

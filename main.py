@@ -1,15 +1,29 @@
 import uuid
-from fastapi import FastAPI,HTTPException
+import os
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Dict
 import uvicorn
 import traceback
+from dotenv import load_dotenv
 from graph.pipeline import build_graph
 from tools.init_db import init_database
 
+load_dotenv()
+
 init_database()
 
-app=FastAPI(title="Innovation Scout R&D Engine")
+app = FastAPI(title="Innovation Scout R&D Engine")
+
+# Allow requests from any origin (Render frontend URL, local dev, etc.)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 graph_app=build_graph()
 
