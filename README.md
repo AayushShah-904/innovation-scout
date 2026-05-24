@@ -1,36 +1,41 @@
-# 🚀 Innovation Scout R&D Engine
+# 🚀 Innovation Scout — R&D Intelligence Engine
 
-**Innovation Scout** is an advanced, multi-agent knowledge retrieval, verification, and synthesis platform designed for enterprise technology scouts, R&D directors, and scientific researchers. Powered by **LangGraph** state machines and **Google Gemini (2.5 Flash)**, the engine performs 3-way parallel agent scans across academic repositories, local vector stores, and live web intelligence, incorporating a **Human-in-the-Loop (HITL)** approval gate before compiling comprehensive research briefings.
+> **Scan the frontier of science and markets in seconds.** Innovation Scout is a multi-agent AI engine that performs 3-way parallel scans across academic literature, live web intelligence, and a local vector knowledge base — then pauses for human review before synthesising a publication-grade research briefing.
 
----
-
-## ✨ Key Features
-
-- **Multi-Agent LangGraph Orchestration**: A structured state graph workflow that breaks down complex research queries, searches parallel sources, ranks findings, pauses for human evaluation, and generates publication-grade summaries.
-- **3-Way Parallel Agent Scans**: Concurrently queries **arXiv** (scientific literature), **pgvector** (local historical knowledge base), and **Google Web Grounding** (live market/tech intelligence) via multi-threading.
-- **AI-Powered Ranking & Credibility Scoring**: Evaluates discovered assets on strict 0.0 to 1.0 scales for relevance and scientific/market credibility, providing precise engineering rationales for every score.
-- **Human-in-the-Loop (HITL) Gate**: Seamlessly pauses the LangGraph execution thread, allowing researchers to inspect, verify, approve, or reject gathered intelligence before report compilation.
-- **Automated Vector DB Ingestion**: Automatically embeds new live web articles and arXiv papers using `sentence-transformers` (`all-MiniLM-L6-v2`) and persists them into a PostgreSQL `pgvector` database for future similarity matching.
-- **Modern Full-Stack Interface**: A decoupled architecture featuring a robust **FastAPI** asynchronous backend and an intuitive, wide-layout **Streamlit** dashboard.
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-innovation--scout--ui.onrender.com-6366f1?style=for-the-badge&logo=render&logoColor=white)](https://innovation-scout-ui.onrender.com/)
 
 ---
 
-## System Architecture & Agent Workflow
+## ✨ What It Does
+
+**Innovation Scout** is an advanced multi-agent R&D intelligence platform built for technology scouts, research directors, and scientists. Given a single high-level research question it:
+
+1. **Parses & expands** the query into precise academic and market keywords using Gemini 2.5 Flash.
+2. **Scans 3 sources in parallel** — arXiv academic papers, a local pgvector knowledge base, and live web results via Google Search grounding.
+3. **Ranks & scores** every discovered asset on a strict 0.0–1.0 relevance and credibility scale with AI-generated engineering rationales.
+4. **Pauses for human review** (HITL gate) — letting you approve, inspect, or reject gathered intelligence before the final report is compiled.
+5. **Synthesises a markdown briefing** — a polished, citation-rich R&D report ready to share.
+
+New arXiv papers and live web articles are **automatically embedded and stored** in the pgvector database, continuously enriching the knowledge base for future queries.
+
+---
+
+## 🏗️ Architecture Diagram
 
 ```mermaid
 graph TD
-    subgraph Streamlit Frontend
+    subgraph React Frontend["⚛️ React + Tailwind Frontend (Static Site)"]
         UI[User Input: Research Query]
         REV[Human-in-the-Loop Review Screen]
         REP[Final R&D Synthesis Report]
     end
 
-    subgraph FastAPI Backend
+    subgraph FastAPI Backend["⚡ FastAPI Backend (Docker)"]
         API_S[POST /search]
         API_A[POST /approve]
     end
 
-    subgraph LangGraph State Machine
+    subgraph LangGraph["🧠 LangGraph State Machine"]
         START((START))
         PARSER[Query Parser Agent<br>gemini-2.5-flash]
         SEARCH[Parallel Searcher Agent<br>ThreadPoolExecutor]
@@ -40,176 +45,219 @@ graph TD
         END((END))
     end
 
-    subgraph External & Local Knowledge Sources
+    subgraph Sources["📚 Knowledge Sources"]
         ARXIV[arXiv API]
-        PGV[pgvector Database<br>all-MiniLM-L6-v2]
+        PGV[pgvector DB<br>all-MiniLM-L6-v2]
         WEB[Google Web Search<br>Gemini Grounding]
     end
 
     UI --> API_S --> START
     START --> PARSER
     PARSER -->|Refined Query & Keywords| SEARCH
-    
+
     SEARCH ==>|Thread 1| ARXIV
     SEARCH ==>|Thread 2| PGV
     SEARCH ==>|Thread 3| WEB
-    
+
     ARXIV -.->|Auto-Ingest| PGV
     WEB -.->|Auto-Ingest| PGV
-    
+
     SEARCH -->|Raw Combined Results| RANKER
     RANKER -->|Ranked & Scored Results| HITL
-    
+
     HITL -->|State Paused| REV
     REV -->|Approve / Reject| API_A --> HITL
-    
+
     HITL -->|If Approved| REPORTER
     REPORTER -->|Markdown Briefing| END
     END --> REP
 ```
 
-*(Note: A high-resolution flowchart is also automatically generated and saved locally as `graph_flowchart.png` when testing the pipeline).*
+---
+
+## 🛠️ Tech Stack
+
+### Backend
+![Python](https://img.shields.io/badge/Python_3.10+-3776AB?style=flat-square&logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white)
+![LangGraph](https://img.shields.io/badge/LangGraph-0D0D0D?style=flat-square&logo=langchain&logoColor=white)
+![Google Gemini](https://img.shields.io/badge/Gemini_2.5_Flash-4285F4?style=flat-square&logo=google&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL_pgvector-336791?style=flat-square&logo=postgresql&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white)
+
+### Frontend
+![React](https://img.shields.io/badge/React_19-61DAFB?style=flat-square&logo=react&logoColor=black)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS_v4-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat-square&logo=vite&logoColor=white)
+
+### Deployment
+![Render](https://img.shields.io/badge/Render-46E3B7?style=flat-square&logo=render&logoColor=black)
+![Supabase](https://img.shields.io/badge/Supabase_pgvector-3ECF8E?style=flat-square&logo=supabase&logoColor=white)
 
 ---
 
-## Project Structure
+## 📸 Screenshots
+
+| Search & Query | Agent Scanning | HITL Review |
+|:-:|:-:|:-:|
+| ![Search stage](https://raw.githubusercontent.com/AayushShah-904/innovation-scout/refs/heads/main/assets/screenshot_search_stage.png) | ![Scanning stage](https://raw.githubusercontent.com/AayushShah-904/innovation-scout/refs/heads/main/assets/screenshot_scanning_stage.png) | ![HITL review stage](https://raw.githubusercontent.com/AayushShah-904/innovation-scout/refs/heads/main/assets/screenshot_review_stage.png) |
+
+> 💡 Try it live at **[innovation-scout-ui.onrender.com](https://innovation-scout-ui.onrender.com/)**
+
+---
+
+## 📁 Project Structure
 
 ```text
 innovation-scout/
 ├── agents/
-│   ├── query_parser.py     # LLM node transforming raw queries into structured keywords
-│   ├── searcher.py         # Multi-threaded parallel searcher across arXiv, DB, and Web
-│   ├── ranker.py           # AI evaluator scoring relevance & credibility with rationales
+│   ├── query_parser.py     # LLM node: transforms raw queries into structured keywords
+│   ├── searcher.py         # Multi-threaded parallel search across arXiv, DB & Web
+│   ├── ranker.py           # AI evaluator scoring relevance & credibility (0.0–1.0)
 │   └── reporter.py         # Final synthesis node generating markdown briefing reports
 ├── graph/
-│   ├── pipeline.py         # LangGraph state graph assembly, compilation, and checkpointer
-│   └── state.py            # TypedDict defining the shared state across all agent nodes
+│   ├── pipeline.py         # LangGraph state graph assembly, compilation & checkpointer
+│   └── state.py            # TypedDict defining shared state across all agent nodes
 ├── hitl/
-│   └── human_review.py     # Human-in-the-loop checkpoint pause node
+│   └── human_review.py     # HITL checkpoint pause node
 ├── tools/
 │   ├── arxiv_tool.py       # Wrapper for querying the arXiv academic paper API
-│   ├── init_db.py          # Script to initialize PostgreSQL tables and pgvector extension
-│   ├── vector_store.py     # sentence-transformers embedding & pgvector cosine similarity
-│   └── web_search_tool.py  # Gemini-powered live web search with Google Search grounding
-├── app.py                  # Streamlit interactive frontend dashboard
-├── main.py                 # FastAPI backend server managing sessions and graph execution
-├── docker-compose.yml      # Docker Compose configuration for pgvector database container
-├── requirements.txt        # Project Python dependencies
-└── README.md               # Project documentation
+│   ├── init_db.py          # PostgreSQL table initialisation & pgvector extension setup
+│   ├── vector_store.py     # sentence-transformers embedding & pgvector cosine search
+│   └── web_search_tool.py  # Gemini-powered live web search with Google grounding
+├── frontend/               # React + TypeScript + Tailwind CSS SPA
+│   └── src/
+│       ├── App.tsx          # Main application shell & routing
+│       ├── components/      # Reusable UI components
+│       └── hooks/           # Custom React hooks
+├── main.py                 # FastAPI backend — session management & graph execution
+├── Dockerfile              # Docker image for the FastAPI backend
+├── docker-compose.yml      # Local pgvector database container
+├── render.yaml             # Render Blueprint (deploys API + static frontend)
+└── requirements.txt        # Python dependencies
 ```
 
 ---
 
-## Prerequisites & Installation
+## ⚙️ How to Run Locally
 
-### 1. Prerequisites
+### Prerequisites
 - **Python 3.10+**
-- **Docker & Docker Compose** (for running the PostgreSQL `pgvector` container)
-- **Google Gemini API Key** (with access to `gemini-2.5-flash` and Google Search grounding)
+- **Node.js 18+** & npm
+- **Docker & Docker Compose** (for the local pgvector database)
+- **Google Gemini API Key** (access to `gemini-2.5-flash` + Google Search grounding)
 
-### 2. Clone and Setup Virtual Environment
+---
+
+### 1 · Clone & create virtual environment
+
 ```bash
 git clone https://github.com/your-username/innovation-scout.git
 cd innovation-scout
 
-# Create and activate virtual environment
 python -m venv venv
-# On Windows:
+
+# Windows
 venv\Scripts\activate
-# On Linux/macOS:
+
+# macOS / Linux
 source venv/bin/activate
 
-# Install dependencies
 pip install -r requirements.txt
 ```
 
-### 3. Environment Configuration
-Create a `.env` file in the root directory and add your Google Gemini API key:
+### 2 · Configure environment variables
 
-```env
-GEMINI_API_KEY=your_actual_gemini_api_key_here
+Copy `.env.example` to `.env` and fill in your keys:
+
+```bash
+cp .env.example .env
 ```
 
----
+```env
+# .env
+GEMINI_API_KEY=your_gemini_api_key_here
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/innovationscout
+```
 
-## Running the Application
+### 3 · Start the local vector database
 
-### Step 1: Start the Vector Database
-Launch the PostgreSQL `pgvector` container using Docker Compose:
 ```bash
 docker-compose up -d
 ```
-*(Verify the container is healthy and running on port `5432`).*
 
-### Step 2: Initialize the Database Schema
-Run the database initialization script to create the necessary tables and enable the `vector` extension:
+Verify the container is healthy on port `5432`, then initialise the schema:
+
 ```bash
 python tools/init_db.py
+# Expected: Database initialized successfully
 ```
-*Expected Output: `Database initialized successfully`*
 
-### Step 3: Start the FastAPI Backend Server
-Launch the asynchronous backend API server:
+### 4 · Start the FastAPI backend
+
 ```bash
 python main.py
+# API available at http://127.0.0.1:8000
+# Interactive docs at http://127.0.0.1:8000/docs
 ```
-*(The FastAPI server will start on `http://127.0.0.1:8000` with live reloading enabled).*
 
-### Step 4: Start the Streamlit Frontend Dashboard
-Open a new terminal, activate your virtual environment, and launch the Streamlit app:
-```bash
-streamlit run app.py
-```
-*(The Streamlit dashboard will automatically open in your default browser at `http://localhost:8501`).*
+### 5 · Start the React frontend
 
----
-
-## Usage Walkthrough
-
-1. **Enter Research Query**: On the main Streamlit screen, input your high-level research or business problem (e.g., *"Eco-friendly bio-plastics for protective phone cases"*). Click **Search**.
-2. **Parallel Execution**: The backend initiates a LangGraph session, parsing your query into targeted keywords and simultaneously scanning arXiv, the local vector database, and the live web.
-3. **Evaluate Results (HITL Gate)**: The graph pauses execution and presents the top-ranked scientific and market discoveries. Review the assigned **Relevance** and **Credibility** scores, progress bars, and AI reasoning.
-4. **Approve or Reject**:
-   - **Approve & Compile Briefing Report**: Resumes the LangGraph state machine to synthesize the top assets into a polished markdown briefing report.
-   - **Reject & Clear Session**: Halts the workflow and resets the session for a new query.
-5. **Review Final Briefing**: Explore the generated report complete with verified high-value assets, credibility metrics, and source links.
-
----
-
-## API Reference
-
-### `POST /search`
-Initiates a new LangGraph research session.
-- **Payload**: `{"query": "your research topic"}`
-- **Response**: Returns `session_id`, status, expanded keywords, and ranked research results.
-
-### `POST /approve`
-Submits human review decision to resume or terminate the LangGraph thread.
-- **Payload**: `{"session_id": "uuid", "approve": true}`
-- **Response**: Returns the final compiled markdown briefing report (`final_report`).
-
----
-
-## Standalone Module Testing
-
-You can independently verify individual components and agent nodes using their built-in test blocks:
+Open a **new terminal**:
 
 ```bash
-# Test Query Parser Agent
-python agents/query_parser.py
-
-# Test 3-Way Parallel Searcher
-python agents/searcher.py
-
-# Test Ranker Agent
-python agents/ranker.py
-
-# Test Integrated LangGraph Flow & Generate Flowchart PNG
-python graph/pipeline.py
+cd frontend
+npm install
+npm run dev
+# Frontend available at http://localhost:5173
 ```
 
 ---
 
-## License
+## 🔌 API Reference
 
-This project is licensed under the MIT License. See the `LICENSE` file for more details.
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/search` | Initiate a new LangGraph research session |
+| `POST` | `/approve` | Submit human review decision (approve / reject) |
+| `GET` | `/` | Health check |
+
+**`POST /search`**
+```json
+{ "query": "eco-friendly bio-plastics for protective phone cases" }
+```
+Returns: `session_id`, expanded keywords, and ranked research results.
+
+**`POST /approve`**
+```json
+{ "session_id": "uuid", "approve": true }
+```
+Returns: final compiled markdown briefing report.
+
+---
+
+## 🧪 Testing Individual Agents
+
+You can independently verify each pipeline node:
+
+```bash
+python agents/query_parser.py   # Query Parser Agent
+python agents/searcher.py       # 3-Way Parallel Searcher
+python agents/ranker.py         # Ranker & Credibility Scorer
+python graph/pipeline.py        # Full LangGraph flow + saves graph_flowchart.png
+```
+
+---
+
+## 🌐 Live Demo
+
+**[https://innovation-scout-ui.onrender.com/](https://innovation-scout-ui.onrender.com/)**
+
+> The live demo runs the React frontend as a static site on Render, connected to a FastAPI backend deployed via Docker. The vector database is hosted on Supabase.
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License**. See the `LICENSE` file for details.
