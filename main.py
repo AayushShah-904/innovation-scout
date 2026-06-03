@@ -43,10 +43,16 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="Innovation Scout R&D Engine", lifespan=lifespan)
 
-# Allow requests from any origin (Render frontend URL, local dev, etc.)
+# Configure CORS to allow the React frontend to communicate with this backend
+origins = [
+    "http://localhost:5173",    # React local dev server
+    "http://127.0.0.1:5173",
+    # Add your production frontend URL here later, e.g., "https://app.innovationscout.com"
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
